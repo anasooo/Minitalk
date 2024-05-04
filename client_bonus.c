@@ -1,18 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: asodor <marvin@42.fr>                      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/22 09:55:11 by asodor            #+#    #+#             */
-/*   Updated: 2024/05/03 22:26:49 by asodor           ###   ########.fr       */
+/*   Created: 2024/05/02 18:59:36 by asodor            #+#    #+#             */
+/*   Updated: 2024/05/04 05:58:19 by asodor           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <signal.h>
-#include <stdlib.h>
+#include "minitalk.h"
+
+void	signal_handler(int sig)
+{
+	if (sig == SIGUSR1)
+		printf("Message received\n");
+}
 
 void send_char(int pid, char c)
 {
@@ -35,15 +39,21 @@ void send_char(int pid, char c)
 
 int main(int ac, char **av)
 {
-    int i;
-
+    int		i;
+    pid_t	pid;
+    
+    signal(SIGUSR1, signal_handler);
     if (ac != 3)
-        return (1);
+        return (printf("Enter a valid args"), 0);
+    pid = atoi(av[1]);
+    if (pid == 0)
+	    return(printf("Invalid PID\n"), 0);
     i = 0;
     while (av[2][i])
     {
-        send_char(atoi(av[1]), av[2][i]);
+        send_char(pid, av[2][i]);
         i++;
     }
-    send_char(atoi(av[1]), '\0');
+    send_char(pid, '\0');
 }
+
